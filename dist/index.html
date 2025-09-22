@@ -26,6 +26,37 @@
 </script>
   <script type="module" crossorigin src="/assets/index-Cf4xC9hs.js"></script>
 </head>
+  <form id="lead">
+  <input name="name"  placeholder="姓名" required>
+  <input name="phone" placeholder="電話" required>
+  <textarea name="note" placeholder="備註"></textarea>
+  <button type="submit">儲存</button>
+</form>
+
+<!-- 2) 放在 </body> 前的 script -->
+<script>
+  // 換成你的 Apps Script Web App（/exec）
+  const WEBHOOK = "https://script.google.com/macros/s/你的ID/exec";
+
+  document.getElementById("lead").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const payload = Object.fromEntries(fd.entries()); // {name, phone, note, ...}
+
+    try {
+      const res = await fetch(WEBHOOK, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+      alert(json.ok ? "已存到 Google 試算表！" : `失敗：${json.error||""}`);
+      if (json.ok) e.target.reset();
+    } catch (err) {
+      alert("送出錯誤：" + err.message);
+    }
+  });
+</script>
   <body class="bg-slate-100 dark:bg-slate-900">
     <div id="root"></div>
   </body>
